@@ -1,0 +1,10 @@
+1;Terminal Central
+2;Estación Norte
+3;Estación Sur
+4;Estación Este
+5;Estación Oeste
+6;Terminal Aeropuerto
+7;Estación Universidad
+8;Estación Centro Comercial
+9;Estación Hospital
+10;Estación Estadio

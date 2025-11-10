@@ -1,0 +1,205 @@
+# =============================================================================
+# .gitignore para Proyecto Qt + Visual Studio (rutasDeTransporte)
+# =============================================================================
+
+# Archivos de compilación y ejecutables
+*.exe
+*.dll
+*.pdb
+*.ilk
+*.exe.recipe
+*.log
+*.obj
+*.lib
+*.exp
+
+# Directorios de compilación
+x64/
+Debug/
+Release/
+GeneratedFiles/
+*_x64/
+*_x86/
+
+# Archivos específicos de Visual Studio
+.vs/
+*.vcxproj.user
+*.vcxproj.filters
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Archivos de depuración de Visual Studio
+*.idb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Archivos específicos de Qt
+*.autosave
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.qm
+*.pro.user*
+*.pri.user
+*.pro.user
+.qmake.cache
+.qmake.stash
+Makefile*
+!Makefile.am
+
+# Directorios de Qt generados
+qt/
+GeneratedFiles/
+QtTemp/
+
+# MOC (Meta-Object Compiler) files
+moc_*.obj
+moc_*.cpp
+
+# Archivos temporales del sistema
+*.tmp
+*.temp
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs y archivos de depuración
+*.log
+*.ilk
+*.tlog/
+*.recipe
+vc*.idb
+vc*.pdb
+
+# Archivos de backup y temporales del editor
+*.bak
+*.swp
+*.swo
+*~
+.#*
+\#*#
+
+# Archivos de configuración local (pueden contener rutas específicas)
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Archivos de IDEs alternativos
+.idea/
+*.pro.user*
+*.qbs.user
+*.creator
+*.creator.user*
+.vscode/
+*.code-workspace
+
+# Archivos de distribución y empaquetado
+*.zip
+*.rar
+*.tar
+*.tar.gz
+*.7z
+dist/
+build/
+installer/
+
+# Archivos específicos del proyecto (comentar si necesitas versionarlos)
+# data/reportes.txt      # Reportes generados automáticamente
+# data/cierres.txt       # Estado de cierres temporal
+
+# Archivos de configuración de herramientas
+.qmake.cache
+.qmake.stash
+
+# Archivos de análisis estático
+*.sarif
+
+# Archivos de cobertura de código
+*.coverage
+*.coveragexml
+
+# =============================================================================
+# Sección especial para datos del proyecto
+# =============================================================================
+# NOTA: Los siguientes archivos pueden incluir datos importantes del proyecto.
+# Evalúa si necesitas versionarlos:
+
+# Datos de estaciones (generalmente se versionan)
+# data/estaciones.txt
+
+# Datos de rutas (generalmente se versionan)  
+# data/rutas.txt
+
+# Reportes generados automáticamente (generalmente NO se versionan)
+data/reportes.txt
+
+# Estados temporales de cierres (generalmente NO se versionan)
+data/cierres.txt
+
+# =============================================================================
+# Archivos que SÍ deben incluirse en el repositorio
+# =============================================================================
+# Estos archivos están explícitamente incluidos:
+!*.cpp
+!*.h
+!*.pro
+!*.qrc
+!*.ui
+!*.ts
+!*.qss
+!CMakeLists.txt
+!*.md
+!*.txt
+!data/estaciones.txt
+!data/rutas.txt
+
+# =============================================================================
+# Configuración específica de Windows
+# =============================================================================
+[Tt]humbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# =============================================================================
+# Notas adicionales:
+# =============================================================================
+# 1. Los archivos .vcxproj y .sln SÍ se deben versionar
+# 2. Los archivos .vcxproj.user NO se deben versionar (configuración local)
+# 3. Los directorios x64/, Debug/, Release/ NO se deben versionar
+# 4. Los archivos de datos importantes (estaciones.txt, rutas.txt) SÍ se deben versionar
+# 5. Los archivos generados por Qt (moc_*, ui_*, qrc_*) NO se deben versionar
