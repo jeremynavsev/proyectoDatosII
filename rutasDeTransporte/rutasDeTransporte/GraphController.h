@@ -57,6 +57,8 @@ private:
     void addReportEntry(const QString& algorithm, int origin, int destination, 
                         const QVector<int>& path, double cost);
     
+    double calculatePathCost(const QVector<int>& path);
+    
     // TODO: Add private helper methods for algorithm implementation
     QVector<int> bfsSearch(int origin, int destination);
     QVector<int> dfsSearch(int origin, int destination);

@@ -66,7 +66,7 @@ void GraphController::runBFS(int origin, int destination) {
         if (path.isEmpty()) {
             emit pathNotFound("BFS");
         } else {
-            double cost = 0.0;
+            double cost = calculatePathCost(path);
             emit pathFound("BFS", path, cost);
             addReportEntry("BFS", origin, destination, path, cost);
         }
@@ -81,7 +81,7 @@ void GraphController::runDFS(int origin, int destination) {
         if (path.isEmpty()) {
             emit pathNotFound("DFS");
         } else {
-            double cost = 0.0;
+            double cost = calculatePathCost(path);
             emit pathFound("DFS", path, cost);
             addReportEntry("DFS", origin, destination, path, cost);
         }
@@ -128,6 +128,14 @@ void GraphController::runKruskal() {
             emit errorOccurred("No se pudo generar árbol de expansión mínima");
         } else {
             emit mstFound("Kruskal", edges, totalCost);
+            
+            // Add report for MST
+            QVector<int> edgeList;
+            for (const auto& edge : edges) {
+                edgeList.append(edge.first);
+                edgeList.append(edge.second);
+            }
+            addReportEntry("Kruskal MST", -1, -1, edgeList, totalCost);
         }
     } catch (...) {
         emit errorOccurred("Error al ejecutar Kruskal");
@@ -142,6 +150,14 @@ void GraphController::runPrim() {
             emit errorOccurred("No se pudo generar árbol de expansión mínima");
         } else {
             emit mstFound("Prim", edges, totalCost);
+            
+            // Add report for MST
+            QVector<int> edgeList;
+            for (const auto& edge : edges) {
+                edgeList.append(edge.first);
+                edgeList.append(edge.second);
+            }
+            addReportEntry("Prim MST", -1, -1, edgeList, totalCost);
         }
     } catch (...) {
         emit errorOccurred("Error al ejecutar Prim");
@@ -178,6 +194,21 @@ void GraphController::addReportEntry(const QString& algorithm, int origin, int d
     }
     
     m_reportManager->addReport(entry);
+}
+
+// Helper function to calculate path cost
+double GraphController::calculatePathCost(const QVector<int>& path) {
+    double totalCost = 0.0;
+    for (int i = 0; i < path.size() - 1; ++i) {
+        QVector<Edge> edges = m_graph->getEdgesFrom(path[i]);
+        for (const Edge& edge : edges) {
+            if (edge.getTo() == path[i + 1]) {
+                totalCost += edge.getWeight();
+                break;
+            }
+        }
+    }
+    return totalCost;
 }
 
 // ========== ALGORITHM IMPLEMENTATIONS ==========

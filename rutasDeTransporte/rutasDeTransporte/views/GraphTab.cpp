@@ -40,8 +40,8 @@ void GraphTab::setupUI() {
     m_loadMapButton = new QPushButton("Cargar Mapa", this);
     m_addEdgeButton = new QPushButton("Agregar Conexión", this);
     m_removeEdgeButton = new QPushButton("Eliminar Conexión", this);
-    m_markClosureButton = new QPushButton("⚠ Marcar Accidente", this);
-    m_reopenEdgeButton = new QPushButton("✓ Reabrir Ruta", this);
+    m_markClosureButton = new QPushButton("Marcar Accidente", this);
+    m_reopenEdgeButton = new QPushButton("Reabrir Ruta", this);
     buttonLayout1->addWidget(m_loadMapButton);
     buttonLayout1->addWidget(m_addEdgeButton);
     buttonLayout1->addWidget(m_removeEdgeButton);
@@ -61,6 +61,7 @@ void GraphTab::setupUI() {
     mainLayout->addLayout(buttonLayout2);
     
     QHBoxLayout* buttonLayout3 = new QHBoxLayout();
+    buttonLayout3->addStretch();
     m_kruskalButton = new QPushButton("Kruskal", this);
     m_primButton = new QPushButton("Prim", this);
     m_reportButton = new QPushButton("Generar Reporte", this);
