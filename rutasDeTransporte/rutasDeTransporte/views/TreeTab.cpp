@@ -143,12 +143,15 @@ void TreeTab::onInsertClicked() {
         m_graphController->getGraph()->addStation(station);
         
         // Ask if user wants to add connections
-        QMessageBox::StandardButton reply = QMessageBox::question(
-            this, "Agregar Conexiones", 
-            QString("¿Desea agregar conexiones para la estación '%1'?").arg(name),
-            QMessageBox::Yes | QMessageBox::No);
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle("Agregar Conexiones");
+        msgBox.setText(QString("¿Desea agregar conexiones para la estación '%1'?").arg(name));
+        msgBox.setIcon(QMessageBox::Question);
+        QPushButton* yesButton = msgBox.addButton("Sí", QMessageBox::YesRole);
+        msgBox.addButton("No", QMessageBox::NoRole);
+        msgBox.exec();
         
-        if (reply == QMessageBox::Yes) {
+        if (msgBox.clickedButton() == yesButton) {
             // Get all existing stations
             QVector<Station> allStations = m_controller->getAllStations();
             QStringList stationList;
@@ -186,12 +189,15 @@ void TreeTab::onInsertClicked() {
                                          .arg(id).arg(otherStationId).arg(distance, 0, 'f', 1));
                             
                             // Ask if want to add more connections
-                            QMessageBox::StandardButton more = QMessageBox::question(
-                                this, "Más Conexiones", 
-                                "¿Desea agregar otra conexión?",
-                                QMessageBox::Yes | QMessageBox::No);
+                            QMessageBox msgBox2(this);
+                            msgBox2.setWindowTitle("Más Conexiones");
+                            msgBox2.setText("¿Desea agregar otra conexión?");
+                            msgBox2.setIcon(QMessageBox::Question);
+                            QPushButton* yesButton2 = msgBox2.addButton("Sí", QMessageBox::YesRole);
+                            msgBox2.addButton("No", QMessageBox::NoRole);
+                            msgBox2.exec();
                             
-                            if (more == QMessageBox::No) {
+                            if (msgBox2.clickedButton() != yesButton2) {
                                 addingConnections = false;
                             }
                         } else {
@@ -232,18 +238,21 @@ void TreeTab::onDeleteClicked() {
                                    .arg(edge.getWeight(), 0, 'f', 1);
             }
             
-            QMessageBox::StandardButton reply = QMessageBox::warning(
-                this, "⚠ Advertencia - Estación con Conexiones",
-                QString("La estación ID=%1 tiene %2 conexión(es) activa(s):%3\n\n"
-                        "Si elimina esta estación, también se eliminarán todas sus conexiones.\n\n"
-                        "¿Está seguro que desea continuar?")
-                    .arg(id)
-                    .arg(edges.size())
-                    .arg(connectionsList),
-                QMessageBox::Yes | QMessageBox::No,
-                QMessageBox::No);
+            QMessageBox msgBox(this);
+            msgBox.setWindowTitle("⚠ Advertencia - Estación con Conexiones");
+            msgBox.setText(QString("La estación ID=%1 tiene %2 conexión(es) activa(s):%3\n\n"
+                    "Si elimina esta estación, también se eliminarán todas sus conexiones.\n\n"
+                    "¿Está seguro que desea continuar?")
+                .arg(id)
+                .arg(edges.size())
+                .arg(connectionsList));
+            msgBox.setIcon(QMessageBox::Warning);
+            QPushButton* yesButton = msgBox.addButton("Sí", QMessageBox::YesRole);
+            QPushButton* noButton = msgBox.addButton("No", QMessageBox::NoRole);
+            msgBox.setDefaultButton(noButton); // Default to "No"
+            msgBox.exec();
             
-            if (reply == QMessageBox::No) {
+            if (msgBox.clickedButton() != yesButton) {
                 appendOutput(QString("✗ Eliminación cancelada para estación ID=%1").arg(id));
                 return;
             }

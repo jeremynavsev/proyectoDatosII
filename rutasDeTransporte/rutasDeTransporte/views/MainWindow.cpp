@@ -10,6 +10,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QCloseEvent>
 #include <QApplication>
 
@@ -380,16 +381,23 @@ void MainWindow::applyModernStyle() {
 }
 
 void MainWindow::closeEvent(QCloseEvent* event) {
-    QMessageBox::StandardButton reply = QMessageBox::question(
-        this, "Salir", "¿Desea guardar los datos antes de salir?",
-        QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle("Salir");
+    msgBox.setText("¿Desea guardar los datos antes de salir?");
+    msgBox.setIcon(QMessageBox::Question);
     
-    if (reply == QMessageBox::Cancel) {
+    QPushButton* yesButton = msgBox.addButton("Sí", QMessageBox::YesRole);
+    QPushButton* noButton = msgBox.addButton("No", QMessageBox::NoRole);
+    QPushButton* cancelButton = msgBox.addButton("Cancelar", QMessageBox::RejectRole);
+    
+    msgBox.exec();
+    
+    if (msgBox.clickedButton() == cancelButton) {
         event->ignore();
         return;
     }
     
-    if (reply == QMessageBox::Yes) {
+    if (msgBox.clickedButton() == yesButton) {
         m_fileController->saveAll();
     }
     

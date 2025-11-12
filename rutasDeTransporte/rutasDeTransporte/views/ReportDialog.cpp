@@ -43,7 +43,15 @@ void ReportDialog::setupUI() {
 
 void ReportDialog::refreshReports() {
     if (m_reportManager) {
-        m_textEdit->setPlainText(m_reportManager->getReportsAsText());
+        if (m_reportManager->getReportCount() == 0) {
+            m_textEdit->setPlainText("ℹ️ Aún no hay reportes generados.\n\n"
+                                    "Para generar reportes:\n"
+                                    "1. Vaya a la pestaña 'Grafo'\n"
+                                    "2. Ejecute algún algoritmo de búsqueda (Dijkstra, BFS, DFS, etc.)\n"
+                                    "3. Los reportes aparecerán automáticamente aquí");
+        } else {
+            m_textEdit->setPlainText(m_reportManager->getReportsAsText());
+        }
     }
 }
 
