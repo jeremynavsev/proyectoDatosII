@@ -31,7 +31,7 @@ TreeTab::TreeTab(TreeController* controller, QWidget* parent)
 void TreeTab::setupUI() {
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     
-    QGroupBox* inputGroup = new QGroupBox("Gestión de Estaciones", this);
+    QGroupBox* inputGroup = new QGroupBox("", this);
     QGridLayout* inputLayout = new QGridLayout(inputGroup);
     
     QLabel* idLabel = new QLabel("ID:", this);
