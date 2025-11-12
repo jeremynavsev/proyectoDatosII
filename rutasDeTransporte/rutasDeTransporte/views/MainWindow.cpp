@@ -101,6 +101,7 @@ void MainWindow::showReports() {
     if (!m_reportDialog) {
         m_reportDialog = new ReportDialog(m_fileController->getReportManager(), this);
     }
+    m_reportDialog->refreshReports();  // Refrescar reportes antes de mostrar
     m_reportDialog->exec();
 }
 
