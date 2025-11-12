@@ -8,6 +8,7 @@
 #include <QStringConverter>
 #include <QDir>
 #include <QSet>
+#include <QRegularExpression>
 
 FileController::FileController(QObject* parent) 
     : QObject(parent), m_tree(nullptr), m_graph(nullptr), 
@@ -63,6 +64,7 @@ void FileController::loadStations() {
     
     QFile file(getStationsFilePath());
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        emit errorOccurred(QString("No se pudo abrir el archivo: %1").arg(getStationsFilePath()));
         emit stationsLoaded(0);
         return;
     }
@@ -70,24 +72,51 @@ void FileController::loadStations() {
     QTextStream in(&file);
     in.setEncoding(QStringConverter::Utf8);
     int count = 0;
+    int lineNumber = 0;
     
     while (!in.atEnd()) {
         QString line = in.readLine().trimmed();
-        if (line.isEmpty() || line.startsWith("#")) continue;
+        lineNumber++;
         
-        QStringList parts = line.split(';');
+        // Skip empty lines and comments
+        if (line.isEmpty() || line.startsWith("#") || line.startsWith("//")) {
+            continue;
+        }
+        
+        // Support both semicolon and comma as separators
+        QStringList parts;
+        if (line.contains(';')) {
+            parts = line.split(';');
+        } else if (line.contains(',')) {
+            parts = line.split(',');
+        } else if (line.contains('\t')) {
+            parts = line.split('\t');
+        } else {
+            // Try to split by whitespace if no delimiter found
+            parts = line.split(QRegularExpression("\\s+"));
+        }
+        
         if (parts.size() >= 2) {
             bool ok;
             int id = parts[0].trimmed().toInt(&ok);
-            if (ok) {
+            if (ok && id >= 0) {
                 QString name = parts[1].trimmed();
-                Station station(id, name);
-                m_tree->insert(station);
-                m_graph->addStation(station);
-                count++;
+                
+                // If there are more parts, join them as the name (in case name has separators)
+                for (int i = 2; i < parts.size(); ++i) {
+                    name += " " + parts[i].trimmed();
+                }
+                
+                if (!name.isEmpty()) {
+                    Station station(id, name);
+                    m_tree->insert(station);
+                    m_graph->addStation(station);
+                    count++;
+                }
             }
         }
     }
+    
     file.close();
     emit stationsLoaded(count);
 }
@@ -100,6 +129,7 @@ void FileController::loadRoutes() {
     
     QFile file(getRoutesFilePath());
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        emit errorOccurred(QString("No se pudo abrir el archivo: %1").arg(getRoutesFilePath()));
         emit routesLoaded(0);
         return;
     }
@@ -107,23 +137,42 @@ void FileController::loadRoutes() {
     QTextStream in(&file);
     in.setEncoding(QStringConverter::Utf8);
     int count = 0;
+    int lineNumber = 0;
     
     while (!in.atEnd()) {
         QString line = in.readLine().trimmed();
-        if (line.isEmpty() || line.startsWith("#")) continue;
+        lineNumber++;
         
-        QStringList parts = line.split(';');
+        // Skip empty lines and comments
+        if (line.isEmpty() || line.startsWith("#") || line.startsWith("//")) {
+            continue;
+        }
+        
+        // Support multiple delimiters
+        QStringList parts;
+        if (line.contains(';')) {
+            parts = line.split(';');
+        } else if (line.contains(',')) {
+            parts = line.split(',');
+        } else if (line.contains('\t')) {
+            parts = line.split('\t');
+        } else {
+            parts = line.split(QRegularExpression("\\s+"));
+        }
+        
         if (parts.size() >= 3) {
             bool ok1, ok2, ok3;
             int from = parts[0].trimmed().toInt(&ok1);
             int to = parts[1].trimmed().toInt(&ok2);
             double weight = parts[2].trimmed().toDouble(&ok3);
-            if (ok1 && ok2 && ok3) {
+            
+            if (ok1 && ok2 && ok3 && from >= 0 && to >= 0 && weight > 0) {
                 m_graph->addEdge(from, to, weight, true);
                 count++;
             }
         }
     }
+    
     file.close();
     emit routesLoaded(count);
 }
@@ -136,6 +185,7 @@ void FileController::loadClosures() {
     
     QFile file(getClosuresFilePath());
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        // It's OK if closures file doesn't exist
         emit closuresLoaded(0);
         return;
     }
@@ -146,19 +196,35 @@ void FileController::loadClosures() {
     
     while (!in.atEnd()) {
         QString line = in.readLine().trimmed();
-        if (line.isEmpty() || line.startsWith("#")) continue;
         
-        QStringList parts = line.split(';');
+        // Skip empty lines and comments
+        if (line.isEmpty() || line.startsWith("#") || line.startsWith("//")) {
+            continue;
+        }
+        
+        // Support multiple delimiters
+        QStringList parts;
+        if (line.contains(';')) {
+            parts = line.split(';');
+        } else if (line.contains(',')) {
+            parts = line.split(',');
+        } else if (line.contains('\t')) {
+            parts = line.split('\t');
+        } else {
+            parts = line.split(QRegularExpression("\\s+"));
+        }
+        
         if (parts.size() >= 2) {
             bool ok1, ok2;
             int from = parts[0].trimmed().toInt(&ok1);
             int to = parts[1].trimmed().toInt(&ok2);
-            if (ok1 && ok2) {
+            if (ok1 && ok2 && from >= 0 && to >= 0) {
                 m_graph->markEdgeClosed(from, to, true, true);
                 count++;
             }
         }
     }
+    
     file.close();
     emit closuresLoaded(count);
 }

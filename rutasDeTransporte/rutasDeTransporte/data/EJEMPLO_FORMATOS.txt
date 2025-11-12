@@ -1,0 +1,78 @@
+# EJEMPLOS DE FORMATOS SOPORTADOS PARA ARCHIVOS
+
+## ESTACIONES (estaciones.txt)
+
+### Formato 1: Punto y coma (recomendado)
+1;Terminal Central
+2;Estación Norte
+
+### Formato 2: Coma
+1,Terminal Central
+2,Estación Norte
+
+### Formato 3: Tabulación
+1	Terminal Central
+2	Estación Norte
+
+### Formato 4: Espacios
+1 Terminal Central
+2 Estación Norte
+
+### Con comentarios
+# Esto es un comentario
+// Esto también es un comentario
+1;Terminal Central  # Comentarios inline no soportados
+2;Estación Norte
+
+### Nombres con múltiples palabras
+1;Terminal Central de Autobuses
+2;Estación Norte Metro Línea A
+3;Centro Comercial Plaza del Sol
+
+
+## RUTAS (rutas.txt)
+
+### Formato: origen;destino;peso
+
+### Con punto y coma
+1;2;5.5
+2;3;8.2
+3;4;10.0
+
+### Con coma
+1,2,5.5
+2,3,8.2
+
+### Con tabulación
+1	2	5.5
+2	3	8.2
+
+### Pesos decimales
+1;2;5.5
+1;3;7.25
+1;4;6.8
+
+
+## CIERRES (cierres.txt)
+
+### Formato: origen;destino
+
+# Accidentes en las siguientes rutas
+3;9
+1;5
+2;4
+
+### Con otros separadores
+3,9
+1,5
+
+
+## NOTAS IMPORTANTES
+
+1. El sistema detecta automáticamente el separador usado
+2. Las líneas vacías son ignoradas
+3. Las líneas que empiezan con # o // son comentarios
+4. Los espacios al inicio y final se eliminan automáticamente
+5. Los IDs deben ser números enteros no negativos
+6. Los pesos deben ser números positivos (pueden ser decimales)
+7. Si una línea tiene formato incorrecto, se ignora silenciosamente

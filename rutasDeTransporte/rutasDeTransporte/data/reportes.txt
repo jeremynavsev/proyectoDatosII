@@ -1,3 +1,12 @@
-REPORTES - RUTAS DE TRANSPORTE 1.0
-==================================
+=== REPORTES DE CONSULTAS DE RUTAS ===
+
+Reporte #1
+Fecha y Hora: 2025-11-11 20:59:56
+Algoritmo: Dijkstra
+Origen: 6 - Terminal Aeropuerto
+Destino: 10 - Estación Estadio
+Ruta: 6 (Terminal Aeropuerto) -> 2 (Estación Norte) -> 4 (Estación Este) -> 10 (Estación Estadio)
+Costo Total: 30.60
+
+----------------------------------------
 

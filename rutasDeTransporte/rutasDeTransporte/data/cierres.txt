@@ -1,1 +1,4 @@
+# Rutas cerradas
+# Formato: ID_origen;ID_destino
+
 3;9

@@ -36,6 +36,7 @@ private slots:
 private:
     void setupUI();
     void createMenuBar();
+    void applyModernStyle();
     
     TreeController* m_treeController;
     GraphController* m_graphController;

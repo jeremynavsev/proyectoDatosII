@@ -29,6 +29,7 @@ public slots:
     void onAddEdgeClicked();
     void onRemoveEdgeClicked();
     void onMarkClosureClicked();
+    void onReopenEdgeClicked();
     void onBFSClicked();
     void onDFSClicked();
     void onDijkstraClicked();
@@ -55,6 +56,7 @@ private:
     QPushButton* m_addEdgeButton;
     QPushButton* m_removeEdgeButton;
     QPushButton* m_markClosureButton;
+    QPushButton* m_reopenEdgeButton;
     QPushButton* m_bfsButton;
     QPushButton* m_dfsButton;
     QPushButton* m_dijkstraButton;

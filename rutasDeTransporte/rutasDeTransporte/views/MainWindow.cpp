@@ -24,6 +24,7 @@ MainWindow::MainWindow(TreeController* treeController,
       m_reportDialog(nullptr) {
     setupUI();
     createMenuBar();
+    applyModernStyle();
     setWindowTitle("RUTAS DE TRANSPORTE 1.0");
     resize(1000, 700);
 }
@@ -109,6 +110,177 @@ void MainWindow::showAbout() {
         "<li>Generación de reportes</li>"
         "</ul>"
         "<p><i>Desarrollado con Qt Widgets en C++</i></p>");
+}
+
+void MainWindow::applyModernStyle() {
+    // Modern color palette with professional look
+    QString styleSheet = R"(
+        QMainWindow {
+            background-color: #f5f7fa;
+        }
+        
+        QMenuBar {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 4px;
+            font-size: 10pt;
+        }
+        
+        QMenuBar::item {
+            background-color: transparent;
+            padding: 6px 12px;
+        }
+        
+        QMenuBar::item:selected {
+            background-color: #34495e;
+            border-radius: 4px;
+        }
+        
+        QMenuBar::item:pressed {
+            background-color: #1abc9c;
+        }
+        
+        QMenu {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+        }
+        
+        QMenu::item {
+            padding: 6px 25px;
+        }
+        
+        QMenu::item:selected {
+            background-color: #1abc9c;
+            color: white;
+        }
+        
+        QTabWidget::pane {
+            border: 1px solid #bdc3c7;
+            background-color: white;
+            border-radius: 4px;
+        }
+        
+        QTabBar::tab {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+            border-bottom: none;
+            padding: 10px 20px;
+            margin-right: 2px;
+            font-weight: bold;
+        }
+        
+        QTabBar::tab:selected {
+            background-color: #1abc9c;
+            color: white;
+        }
+        
+        QTabBar::tab:hover {
+            background-color: #16a085;
+            color: white;
+        }
+        
+        QPushButton {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 9pt;
+        }
+        
+        QPushButton:hover {
+            background-color: #2980b9;
+        }
+        
+        QPushButton:pressed {
+            background-color: #21618c;
+        }
+        
+        QPushButton:disabled {
+            background-color: #95a5a6;
+        }
+        
+        QTextEdit {
+            background-color: #fefefe;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            padding: 4px;
+            color: #2c3e50;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        
+        QLineEdit {
+            background-color: white;
+            border: 2px solid #bdc3c7;
+            border-radius: 4px;
+            padding: 6px;
+            color: #2c3e50;
+        }
+        
+        QLineEdit:focus {
+            border: 2px solid #3498db;
+        }
+        
+        QGraphicsView {
+            background-color: #ffffff;
+            border: 2px solid #bdc3c7;
+            border-radius: 4px;
+        }
+        
+        QLabel {
+            color: #2c3e50;
+            font-size: 9pt;
+        }
+        
+        QMessageBox {
+            background-color: white;
+        }
+        
+        QScrollBar:vertical {
+            background-color: #ecf0f1;
+            width: 12px;
+            margin: 0px;
+        }
+        
+        QScrollBar::handle:vertical {
+            background-color: #95a5a6;
+            border-radius: 6px;
+            min-height: 20px;
+        }
+        
+        QScrollBar::handle:vertical:hover {
+            background-color: #7f8c8d;
+        }
+        
+        QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+            height: 0px;
+        }
+        
+        QScrollBar:horizontal {
+            background-color: #ecf0f1;
+            height: 12px;
+            margin: 0px;
+        }
+        
+        QScrollBar::handle:horizontal {
+            background-color: #95a5a6;
+            border-radius: 6px;
+            min-width: 20px;
+        }
+        
+        QScrollBar::handle:horizontal:hover {
+            background-color: #7f8c8d;
+        }
+        
+        QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+            width: 0px;
+        }
+    )";
+    
+    setStyleSheet(styleSheet);
 }
 
 void MainWindow::closeEvent(QCloseEvent* event) {

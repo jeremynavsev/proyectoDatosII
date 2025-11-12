@@ -1,3 +1,6 @@
+# Estaciones
+# Formato: ID;Nombre
+
 1;Terminal Central
 2;Estación Norte
 3;Estación Sur
