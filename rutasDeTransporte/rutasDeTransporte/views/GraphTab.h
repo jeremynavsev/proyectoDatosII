@@ -13,7 +13,9 @@ class QGraphicsView;
 class QGraphicsScene;
 class QGraphicsEllipseItem;
 class QGraphicsTextItem;
+class QGraphicsLineItem;
 class GraphController;
+class QTimer;
 
 /**
  * @brief Tab for Graph operations and visualization
@@ -42,6 +44,7 @@ public slots:
     void onPathFound(const QString& algorithm, const QVector<int>& path, double distance);
     void onPathNotFound(const QString& algorithm);
     void onError(const QString& message);
+    void updateEdgePositions();
     
 private:
     void setupUI();
@@ -73,6 +76,12 @@ private:
     QVector<Edge> m_edges;
     QMap<int, QGraphicsEllipseItem*> m_nodeItems;
     QMap<int, QGraphicsTextItem*> m_nodeTextItems;
+    QMap<int, QGraphicsTextItem*> m_nodeNameItems;
+    QVector<QGraphicsLineItem*> m_edgeLines;
+    QVector<QGraphicsTextItem*> m_edgeWeightTexts;
+    QVector<QGraphicsLineItem*> m_pathLines;
+    QVector<int> m_currentPath;
+    QTimer* m_updateTimer;
 };
 
 #endif // GRAPHTAB_H

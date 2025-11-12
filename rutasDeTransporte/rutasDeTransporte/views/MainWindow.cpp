@@ -25,7 +25,7 @@ MainWindow::MainWindow(TreeController* treeController,
     setupUI();
     createMenuBar();
     applyModernStyle();
-    setWindowTitle("RUTAS DE TRANSPORTE 1.0");
+    setWindowTitle("RUTAS DE TRANSPORTE");
     resize(1000, 700);
 }
 
