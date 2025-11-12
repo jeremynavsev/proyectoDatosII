@@ -9,6 +9,7 @@ class QPushButton;
 class QTextEdit;
 class QLineEdit;
 class TreeController;
+class GraphController;
 
 /**
  * @brief Tab for Binary Search Tree operations
@@ -18,6 +19,9 @@ class TreeTab : public QWidget {
     
 public:
     explicit TreeTab(TreeController* controller, QWidget* parent = nullptr);
+    
+    void setGraphController(GraphController* graphController);
+    void showLoadedStations();
     
 public slots:
     void onInsertClicked();
@@ -41,6 +45,7 @@ private:
     void appendOutput(const QString& text);
     
     TreeController* m_controller;
+    GraphController* m_graphController;
     QLineEdit* m_idInput;
     QLineEdit* m_nameInput;
     QPushButton* m_insertButton;

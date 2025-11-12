@@ -42,6 +42,9 @@ int main(int argc, char *argv[]) {
     fileController->loadAll();
     graphController->loadMap();
     
+    // Display loaded stations in tree tab
+    mainWindow.displayInitialStations();
+    
     // Show window
     mainWindow.show();
     

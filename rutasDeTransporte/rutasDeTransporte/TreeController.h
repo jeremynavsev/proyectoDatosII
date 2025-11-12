@@ -17,6 +17,7 @@ public:
     ~TreeController();
     
     BinarySearchTree* getTree();
+    QVector<Station> getAllStations() const;
     
 public slots:
     void insertStation(int id, const QString& name);

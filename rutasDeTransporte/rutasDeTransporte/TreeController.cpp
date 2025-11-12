@@ -11,6 +11,10 @@ BinarySearchTree* TreeController::getTree() {
     return m_tree;
 }
 
+QVector<Station> TreeController::getAllStations() const {
+    return m_tree->getAllStations();
+}
+
 void TreeController::insertStation(int id, const QString& name) {
     try {
         Station station(id, name);

@@ -1,6 +1,8 @@
 #include "TreeTab.h"
 #include "../TreeController.h"
+#include "../GraphController.h"
 #include "../Station.h"
+#include "../Edge.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
@@ -11,9 +13,10 @@
 #include <QGroupBox>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QInputDialog>
 
 TreeTab::TreeTab(TreeController* controller, QWidget* parent)
-    : QWidget(parent), m_controller(controller) {
+    : QWidget(parent), m_controller(controller), m_graphController(nullptr) {
     setupUI();
     
     connect(m_controller, &TreeController::stationInserted, this, &TreeTab::onStationInserted);
@@ -86,6 +89,39 @@ void TreeTab::appendOutput(const QString& text) {
     m_outputText->append(text);
 }
 
+void TreeTab::setGraphController(GraphController* graphController) {
+    m_graphController = graphController;
+}
+
+void TreeTab::showLoadedStations() {
+    // Get all stations directly from the tree
+    QVector<Station> allStations = m_controller->getAllStations();
+    
+    if (allStations.isEmpty()) {
+        appendOutput("⚠ No se encontraron estaciones en el sistema");
+        return;
+    }
+    
+    // Display welcome message
+    appendOutput("═══════════════════════════════════════════════════════");
+    appendOutput("✓ ESTACIONES CARGADAS CORRECTAMENTE DESDE ARCHIVO");
+    appendOutput(QString("  Total: %1 estaciones").arg(allStations.size()));
+    appendOutput("═══════════════════════════════════════════════════════");
+    appendOutput("");
+    
+    // Display each station
+    for (const Station& station : allStations) {
+        appendOutput(QString("  [ID: %1] %2")
+                     .arg(station.getId(), 3)
+                     .arg(station.getName()));
+    }
+    
+    appendOutput("");
+    appendOutput("───────────────────────────────────────────────────────");
+    appendOutput("Utilice los botones de arriba para gestionar estaciones");
+    appendOutput("───────────────────────────────────────────────────────");
+}
+
 void TreeTab::onInsertClicked() {
     bool ok;
     int id = m_idInput->text().toInt(&ok);
@@ -98,7 +134,79 @@ void TreeTab::onInsertClicked() {
         QMessageBox::warning(this, "Error", "El nombre no puede estar vacío");
         return;
     }
+    
+    // Insert station in tree and graph
     m_controller->insertStation(id, name);
+    
+    if (m_graphController) {
+        Station station(id, name);
+        m_graphController->getGraph()->addStation(station);
+        
+        // Ask if user wants to add connections
+        QMessageBox::StandardButton reply = QMessageBox::question(
+            this, "Agregar Conexiones", 
+            QString("¿Desea agregar conexiones para la estación '%1'?").arg(name),
+            QMessageBox::Yes | QMessageBox::No);
+        
+        if (reply == QMessageBox::Yes) {
+            // Get all existing stations
+            QVector<Station> allStations = m_controller->getAllStations();
+            QStringList stationList;
+            
+            for (const Station& s : allStations) {
+                if (s.getId() != id) { // Exclude the newly added station
+                    stationList.append(QString("[%1] %2").arg(s.getId()).arg(s.getName()));
+                }
+            }
+            
+            if (stationList.isEmpty()) {
+                QMessageBox::information(this, "Sin Estaciones", 
+                    "No hay otras estaciones para conectar.");
+            } else {
+                bool addingConnections = true;
+                while (addingConnections) {
+                    QString selected = QInputDialog::getItem(
+                        this, "Seleccionar Estación", 
+                        QString("Conectar '%1' con:").arg(name),
+                        stationList, 0, false, &ok);
+                    
+                    if (ok && !selected.isEmpty()) {
+                        // Extract ID from "[ID] Name" format
+                        int otherStationId = selected.mid(1, selected.indexOf(']') - 1).toInt();
+                        
+                        // Ask for distance
+                        double distance = QInputDialog::getDouble(
+                            this, "Distancia", 
+                            QString("Distancia entre estación %1 y %2 (km):").arg(id).arg(otherStationId),
+                            5.0, 0.1, 10000.0, 1, &ok);
+                        
+                        if (ok) {
+                            m_graphController->addEdge(id, otherStationId, distance);
+                            appendOutput(QString("✓ Conexión agregada: %1 ↔ %2 (distancia: %3 km)")
+                                         .arg(id).arg(otherStationId).arg(distance, 0, 'f', 1));
+                            
+                            // Ask if want to add more connections
+                            QMessageBox::StandardButton more = QMessageBox::question(
+                                this, "Más Conexiones", 
+                                "¿Desea agregar otra conexión?",
+                                QMessageBox::Yes | QMessageBox::No);
+                            
+                            if (more == QMessageBox::No) {
+                                addingConnections = false;
+                            }
+                        } else {
+                            addingConnections = false;
+                        }
+                    } else {
+                        addingConnections = false;
+                    }
+                }
+                
+                // Reload map to show new connections
+                m_graphController->loadMap();
+            }
+        }
+    }
 }
 
 void TreeTab::onDeleteClicked() {
@@ -108,7 +216,65 @@ void TreeTab::onDeleteClicked() {
         QMessageBox::warning(this, "Error", "ID inválido");
         return;
     }
+    
+    // Check if station has connections in graph
+    if (m_graphController) {
+        QVector<Edge> edges = m_graphController->getGraph()->getEdgesFrom(id);
+        
+        if (!edges.isEmpty()) {
+            // Station has connections, show warning
+            QString connectionsList;
+            for (const Edge& edge : edges) {
+                Station connectedStation = m_graphController->getGraph()->getStation(edge.getTo());
+                connectionsList += QString("\n  • Estación %1: %2 (distancia: %3 km)")
+                                   .arg(edge.getTo())
+                                   .arg(connectedStation.getName())
+                                   .arg(edge.getWeight(), 0, 'f', 1);
+            }
+            
+            QMessageBox::StandardButton reply = QMessageBox::warning(
+                this, "⚠ Advertencia - Estación con Conexiones",
+                QString("La estación ID=%1 tiene %2 conexión(es) activa(s):%3\n\n"
+                        "Si elimina esta estación, también se eliminarán todas sus conexiones.\n\n"
+                        "¿Está seguro que desea continuar?")
+                    .arg(id)
+                    .arg(edges.size())
+                    .arg(connectionsList),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
+            
+            if (reply == QMessageBox::No) {
+                appendOutput(QString("✗ Eliminación cancelada para estación ID=%1").arg(id));
+                return;
+            }
+            
+            // Delete all edges connected to this station
+            for (const Edge& edge : edges) {
+                m_graphController->removeEdge(id, edge.getTo());
+            }
+            
+            // Also check for edges coming TO this station
+            QVector<Station> allStations = m_controller->getAllStations();
+            for (const Station& station : allStations) {
+                if (station.getId() != id) {
+                    QVector<Edge> incomingEdges = m_graphController->getGraph()->getEdgesFrom(station.getId());
+                    for (const Edge& edge : incomingEdges) {
+                        if (edge.getTo() == id) {
+                            m_graphController->removeEdge(station.getId(), id);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // Delete from tree
     m_controller->deleteStation(id);
+    
+    // Reload map if graph controller exists
+    if (m_graphController) {
+        m_graphController->loadMap();
+    }
 }
 
 void TreeTab::onSearchClicked() {

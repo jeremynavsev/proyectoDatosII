@@ -41,10 +41,17 @@ void MainWindow::setupUI() {
     m_treeTab = new TreeTab(m_treeController, this);
     m_graphTab = new GraphTab(m_graphController, this);
     
+    // Connect tree tab with graph controller for station management
+    m_treeTab->setGraphController(m_graphController);
+    
     m_tabWidget->addTab(m_treeTab, "Gestión de Estaciones (BST)");
     m_tabWidget->addTab(m_graphTab, "Red de Transporte (Grafo)");
     
     setCentralWidget(m_tabWidget);
+}
+
+void MainWindow::displayInitialStations() {
+    m_treeTab->showLoadedStations();
 }
 
 void MainWindow::createMenuBar() {

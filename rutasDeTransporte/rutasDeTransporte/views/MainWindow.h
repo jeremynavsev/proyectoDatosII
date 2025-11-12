@@ -24,6 +24,8 @@ public:
                QWidget* parent = nullptr);
     ~MainWindow();
     
+    void displayInitialStations();
+    
 protected:
     void closeEvent(QCloseEvent* event) override;
     
