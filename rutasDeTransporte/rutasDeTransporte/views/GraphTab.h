@@ -14,6 +14,7 @@ class QGraphicsScene;
 class QGraphicsEllipseItem;
 class QGraphicsTextItem;
 class QGraphicsLineItem;
+class QGraphicsPixmapItem;
 class GraphController;
 class QTimer;
 
@@ -82,6 +83,7 @@ private:
     QVector<QGraphicsLineItem*> m_pathLines;
     QVector<int> m_currentPath;
     QTimer* m_updateTimer;
+    QGraphicsPixmapItem* m_backgroundItem;
 };
 
 #endif // GRAPHTAB_H

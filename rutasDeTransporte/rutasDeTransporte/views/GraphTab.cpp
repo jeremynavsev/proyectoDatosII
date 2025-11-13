@@ -15,11 +15,13 @@
 #include <QMessageBox>
 #include <QPen>
 #include <QBrush>
+#include <QPixmap>
+#include <QDebug>
 #include <QtMath>
 #include <QTimer>
 
 GraphTab::GraphTab(GraphController* controller, QWidget* parent)
-    : QWidget(parent), m_controller(controller), m_updateTimer(nullptr) {
+    : QWidget(parent), m_controller(controller), m_updateTimer(nullptr), m_backgroundItem(nullptr) {
     setupUI();
     
     // Create timer for updating edge positions
@@ -75,6 +77,25 @@ void GraphTab::setupUI() {
     m_graphView = new QGraphicsView(m_graphScene, this);
     m_graphView->setRenderHint(QPainter::Antialiasing);
     m_graphView->setMinimumHeight(300);
+    
+    // Set background image using QBrush (fills entire view)
+    QPixmap backgroundImage("MapaSanAndreasHD.png");
+    if (!backgroundImage.isNull()) {
+        // Create a brush with the image
+        QBrush brush(backgroundImage);
+        m_graphView->setBackgroundBrush(brush);
+        m_graphView->setCacheMode(QGraphicsView::CacheBackground);
+        
+        // Set scene to a large area so there's space for the graph
+        m_graphScene->setSceneRect(-800, -800, 1600, 1600);
+        
+        qDebug() << "✓ Background image loaded successfully:" << backgroundImage.size();
+        m_backgroundItem = nullptr; // Not using pixmap item anymore
+    } else {
+        qDebug() << "✗ Failed to load background image: MapaSanAndreasHD.png";
+        m_backgroundItem = nullptr;
+    }
+    
     mainLayout->addWidget(m_graphView, 2);
     
     m_outputText = new QTextEdit(this);
@@ -110,6 +131,7 @@ void GraphTab::clearScene() {
     m_edgeWeightTexts.clear();
     m_pathLines.clear();
     m_currentPath.clear();
+    // Background is set on the view, not the scene, so it persists
 }
 
 void GraphTab::drawGraph() {
