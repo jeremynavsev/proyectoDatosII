@@ -78,12 +78,10 @@ void FileController::loadStations() {
         QString line = in.readLine().trimmed();
         lineNumber++;
         
-        // Skip empty lines and comments
         if (line.isEmpty() || line.startsWith("#") || line.startsWith("//")) {
             continue;
         }
         
-        // Support both semicolon and comma as separators
         QStringList parts;
         if (line.contains(';')) {
             parts = line.split(';');
@@ -92,7 +90,6 @@ void FileController::loadStations() {
         } else if (line.contains('\t')) {
             parts = line.split('\t');
         } else {
-            // Try to split by whitespace if no delimiter found
             parts = line.split(QRegularExpression("\\s+"));
         }
         
@@ -102,7 +99,6 @@ void FileController::loadStations() {
             if (ok && id >= 0) {
                 QString name = parts[1].trimmed();
                 
-                // If there are more parts, join them as the name (in case name has separators)
                 for (int i = 2; i < parts.size(); ++i) {
                     name += " " + parts[i].trimmed();
                 }
@@ -143,12 +139,10 @@ void FileController::loadRoutes() {
         QString line = in.readLine().trimmed();
         lineNumber++;
         
-        // Skip empty lines and comments
         if (line.isEmpty() || line.startsWith("#") || line.startsWith("//")) {
             continue;
         }
         
-        // Support multiple delimiters
         QStringList parts;
         if (line.contains(';')) {
             parts = line.split(';');
@@ -185,7 +179,6 @@ void FileController::loadClosures() {
     
     QFile file(getClosuresFilePath());
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        // It's OK if closures file doesn't exist
         emit closuresLoaded(0);
         return;
     }
@@ -197,12 +190,10 @@ void FileController::loadClosures() {
     while (!in.atEnd()) {
         QString line = in.readLine().trimmed();
         
-        // Skip empty lines and comments
         if (line.isEmpty() || line.startsWith("#") || line.startsWith("//")) {
             continue;
         }
         
-        // Support multiple delimiters
         QStringList parts;
         if (line.contains(';')) {
             parts = line.split(';');

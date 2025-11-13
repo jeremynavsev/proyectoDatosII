@@ -6,9 +6,6 @@
 #include <QVector>
 #include <QMap>
 
-/**
- * @brief Weighted graph representing the transport network
- */
 class Graph {
 public:
     Graph();

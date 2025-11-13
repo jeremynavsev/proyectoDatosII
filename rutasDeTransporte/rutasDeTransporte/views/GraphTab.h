@@ -18,9 +18,6 @@ class QGraphicsPixmapItem;
 class GraphController;
 class QTimer;
 
-/**
- * @brief Tab for Graph operations and visualization
- */
 class GraphTab : public QWidget {
     Q_OBJECT
     

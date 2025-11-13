@@ -12,7 +12,6 @@
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     
-    // Register custom types for Qt signals/slots
     qRegisterMetaType<Station>("Station");
     qRegisterMetaType<Edge>("Edge");
     qRegisterMetaType<QVector<Station>>("QVector<Station>");
@@ -21,12 +20,10 @@ int main(int argc, char *argv[]) {
     qRegisterMetaType<QPair<int,int>>("QPair<int,int>");
     qRegisterMetaType<QVector<QPair<int,int>>>("QVector<QPair<int,int>>");
     
-    // Create data structures
     BinarySearchTree* bst = new BinarySearchTree();
     Graph* graph = new Graph();
     ReportManager* reportManager = new ReportManager();
     
-    // Create controllers
     TreeController* treeController = new TreeController(bst, reportManager);
     GraphController* graphController = new GraphController(graph, reportManager);
     FileController* fileController = new FileController();
@@ -35,22 +32,17 @@ int main(int argc, char *argv[]) {
     fileController->setReportManager(reportManager);
     fileController->setDataPath("data/");
     
-    // Create main window
     MainWindow mainWindow(treeController, graphController, fileController);
     
-    // Load initial data
     fileController->loadAll();
     graphController->loadMap();
     
-    // Display loaded stations in tree tab
     mainWindow.displayInitialStations();
     
-    // Show window
     mainWindow.show();
     
     int result = app.exec();
     
-    // Cleanup
     delete treeController;
     delete graphController;
     delete fileController;

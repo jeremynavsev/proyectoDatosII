@@ -21,10 +21,9 @@
 #include <QTimer>
 
 GraphTab::GraphTab(GraphController* controller, QWidget* parent)
-    : QWidget(parent), m_controller(controller), m_updateTimer(nullptr), m_backgroundItem(nullptr) {
+    : QWidget(parent), m_controller(controller), m_updateTimer(nullptr) {
     setupUI();
     
-    // Create timer for updating edge positions
     m_updateTimer = new QTimer(this);
     m_updateTimer->setInterval(16); // ~60 FPS
     connect(m_updateTimer, &QTimer::timeout, this, &GraphTab::updateEdgePositions);
@@ -78,22 +77,16 @@ void GraphTab::setupUI() {
     m_graphView->setRenderHint(QPainter::Antialiasing);
     m_graphView->setMinimumHeight(300);
     
-    // Set background image using QBrush (fills entire view)
     QPixmap backgroundImage("MapaSanAndreasHD.png");
     if (!backgroundImage.isNull()) {
-        // Create a brush with the image
         QBrush brush(backgroundImage);
         m_graphView->setBackgroundBrush(brush);
         m_graphView->setCacheMode(QGraphicsView::CacheBackground);
-        
-        // Set scene to a large area so there's space for the graph
         m_graphScene->setSceneRect(-800, -800, 1600, 1600);
-        
         qDebug() << "✓ Background image loaded successfully:" << backgroundImage.size();
-        m_backgroundItem = nullptr; // Not using pixmap item anymore
+ 
     } else {
         qDebug() << "✗ Failed to load background image: MapaSanAndreasHD.png";
-        m_backgroundItem = nullptr;
     }
     
     mainLayout->addWidget(m_graphView, 2);
@@ -131,13 +124,11 @@ void GraphTab::clearScene() {
     m_edgeWeightTexts.clear();
     m_pathLines.clear();
     m_currentPath.clear();
-    // Background is set on the view, not the scene, so it persists
 }
 
 void GraphTab::drawGraph() {
     clearScene();
     
-    // Stop timer while redrawing
     if (m_updateTimer->isActive()) {
         m_updateTimer->stop();
     }
@@ -151,21 +142,18 @@ void GraphTab::drawGraph() {
     const double radius = 200;
     const int count = m_stations.size();
     
-    // FIRST: Create draggable nodes with initial circular positions
     for (int i = 0; i < count; ++i) {
         const Station& station = m_stations[i];
         double angle = 2 * M_PI * i / count;
         double x = centerX + radius * qCos(angle);
         double y = centerY + radius * qSin(angle);
         
-        // Create draggable ellipse
+       
         QGraphicsEllipseItem* ellipse = m_graphScene->addEllipse(
             x - 25, y - 25, 50, 50,
             QPen(QColor(70, 70, 70), 2.5),
             QBrush(QColor(240, 248, 255)));
         ellipse->setZValue(2);
-        
-        // Make it movable
         ellipse->setFlag(QGraphicsItem::ItemIsMovable, true);
         ellipse->setFlag(QGraphicsItem::ItemIsSelectable, true);
         ellipse->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
@@ -173,7 +161,6 @@ void GraphTab::drawGraph() {
         
         m_nodeItems[station.getId()] = ellipse;
         
-        // ID text (moves with node)
         QGraphicsTextItem* text = m_graphScene->addText(
             QString("%1").arg(station.getId()));
         text->setDefaultTextColor(QColor(40, 40, 40));
@@ -183,11 +170,10 @@ void GraphTab::drawGraph() {
         text->setFont(font);
         text->setPos(x - 10, y - 10);
         text->setZValue(3);
-        text->setParentItem(ellipse); // Parent to node so it moves together
+        text->setParentItem(ellipse);
         text->setFlag(QGraphicsItem::ItemIgnoresTransformations, false);
         m_nodeTextItems[station.getId()] = text;
         
-        // Station name below (moves with node)
         QGraphicsTextItem* nameText = m_graphScene->addText(station.getName());
         QFont nameFont = nameText->font();
         nameFont.setPointSize(7);
@@ -195,11 +181,10 @@ void GraphTab::drawGraph() {
         nameText->setDefaultTextColor(QColor(80, 80, 80));
         nameText->setPos(x - 30, y + 20);
         nameText->setZValue(3);
-        nameText->setParentItem(ellipse); // Parent to node so it moves together
+        nameText->setParentItem(ellipse); 
         m_nodeNameItems[station.getId()] = nameText;
     }
     
-    // SECOND: Draw edges (will be updated dynamically)
     for (const Edge& edge : m_edges) {
         int fromId = edge.getFrom();
         int toId = edge.getTo();
@@ -229,7 +214,6 @@ void GraphTab::drawGraph() {
         line->setZValue(1);
         m_edgeLines.append(line);
         
-        // Draw weight label
         QGraphicsTextItem* weightText = m_graphScene->addText(QString::number(edge.getWeight(), 'f', 1));
         weightText->setPos((fromCenter.x() + toCenter.x()) / 2 - 10, 
                            (fromCenter.y() + toCenter.y()) / 2 - 10);
@@ -243,34 +227,26 @@ void GraphTab::drawGraph() {
     }
     
     m_graphView->fitInView(m_graphScene->itemsBoundingRect(), Qt::KeepAspectRatio);
-    
-    // Start timer to update edge positions when nodes are moved
     m_updateTimer->start();
 }
 
 void GraphTab::drawPath(const QVector<int>& path) {
-    // Clear previous path lines
     for (QGraphicsLineItem* line : m_pathLines) {
         m_graphScene->removeItem(line);
         delete line;
     }
     m_pathLines.clear();
-    
-    // Store current path for dynamic updates
     m_currentPath = path;
     
     if (path.size() < 2) return;
-    
-    // Highlight path nodes
     for (int id : path) {
         if (m_nodeItems.contains(id)) {
             QGraphicsEllipseItem* item = m_nodeItems[id];
-            item->setBrush(QBrush(QColor(255, 223, 0))); // Golden yellow
+            item->setBrush(QBrush(QColor(255, 223, 0))); 
             item->setPen(QPen(QColor(218, 165, 32), 3));
         }
     }
     
-    // Draw path edges with current node positions
     for (int i = 0; i < path.size() - 1; ++i) {
         int fromId = path[i];
         int toId = path[i + 1];
@@ -285,7 +261,6 @@ void GraphTab::drawPath(const QVector<int>& path) {
         QPointF fromCenter = fromNode->rect().center() + fromNode->pos();
         QPointF toCenter = toNode->rect().center() + toNode->pos();
         
-        // Check if edge is closed
         bool isClosed = false;
         for (const Edge& edge : m_edges) {
             if ((edge.getFrom() == fromId && edge.getTo() == toId) ||
@@ -295,7 +270,6 @@ void GraphTab::drawPath(const QVector<int>& path) {
             }
         }
         
-        // Draw highlighted path edge
         QPen pathPen;
         if (isClosed) {
             pathPen = QPen(QColor(255, 0, 0), 6);
@@ -311,7 +285,6 @@ void GraphTab::drawPath(const QVector<int>& path) {
         pathLine->setZValue(4);
         m_pathLines.append(pathLine);
         
-        // Add arrow to show direction
         double angle = qAtan2(toCenter.y() - fromCenter.y(), toCenter.x() - fromCenter.x());
         double arrowSize = 15;
         QPointF arrowP1 = QPointF(toCenter.x() - arrowSize * qCos(angle - M_PI / 6),
@@ -329,13 +302,12 @@ void GraphTab::drawPath(const QVector<int>& path) {
         m_pathLines.append(arrow2);
     }
     
-    // Highlight start and end nodes specially
     if (path.size() >= 2) {
         if (m_nodeItems.contains(path.first())) {
-            m_nodeItems[path.first()]->setBrush(QBrush(QColor(144, 238, 144))); // Light green for start
+            m_nodeItems[path.first()]->setBrush(QBrush(QColor(144, 238, 144))); 
         }
         if (m_nodeItems.contains(path.last())) {
-            m_nodeItems[path.last()]->setBrush(QBrush(QColor(255, 165, 0))); // Orange for end
+            m_nodeItems[path.last()]->setBrush(QBrush(QColor(255, 165, 0))); 
         }
     }
 }
@@ -378,7 +350,6 @@ void GraphTab::onMarkClosureClicked() {
     m_controller->markEdgeClosed(fromId, toId);
     m_controller->loadMap();
     
-    // Show message about closure
     appendOutput(QString("⚠ ACCIDENTE: Ruta cerrada entre estaciones %1 y %2").arg(fromId).arg(toId));
     appendOutput("  Se recomienda recalcular rutas alternativas usando Dijkstra");
 }
@@ -390,10 +361,8 @@ void GraphTab::onReopenEdgeClicked() {
     int toId = QInputDialog::getInt(this, "Reabrir Ruta", "ID estación destino:", 0, 0, 99999, 1, &ok);
     if (!ok) return;
     
-    // Mark edge as open (not closed)
     m_controller->getGraph()->markEdgeClosed(fromId, toId, false, true);
     m_controller->loadMap();
-    
     appendOutput(QString("✓ Ruta reabierta entre estaciones %1 y %2").arg(fromId).arg(toId));
 }
 
@@ -480,7 +449,6 @@ void GraphTab::onError(const QString& message) {
 }
 
 void GraphTab::updateEdgePositions() {
-    // Update edge lines and weight text positions based on current node positions
     int edgeIndex = 0;
     
     for (const Edge& edge : m_edges) {
@@ -500,12 +468,10 @@ void GraphTab::updateEdgePositions() {
         
         QPointF fromCenter = fromNode->rect().center() + fromNode->pos();
         QPointF toCenter = toNode->rect().center() + toNode->pos();
-        
-        // Update line position
+     
         QGraphicsLineItem* line = m_edgeLines[edgeIndex];
         line->setLine(fromCenter.x(), fromCenter.y(), toCenter.x(), toCenter.y());
         
-        // Update weight text position
         if (edgeIndex < m_edgeWeightTexts.size()) {
             QGraphicsTextItem* weightText = m_edgeWeightTexts[edgeIndex];
             weightText->setPos((fromCenter.x() + toCenter.x()) / 2 - 10,
@@ -514,8 +480,7 @@ void GraphTab::updateEdgePositions() {
         
         edgeIndex++;
     }
-    
-    // Update path lines if a path is currently displayed
+
     if (!m_currentPath.isEmpty() && m_currentPath.size() >= 2) {
         int pathLineIndex = 0;
         
@@ -533,14 +498,13 @@ void GraphTab::updateEdgePositions() {
             QPointF fromCenter = fromNode->rect().center() + fromNode->pos();
             QPointF toCenter = toNode->rect().center() + toNode->pos();
             
-            // Update main path line
+
             if (pathLineIndex < m_pathLines.size()) {
                 m_pathLines[pathLineIndex]->setLine(
                     fromCenter.x(), fromCenter.y(), 
                     toCenter.x(), toCenter.y());
                 pathLineIndex++;
-                
-                // Update arrow lines
+
                 if (pathLineIndex < m_pathLines.size()) {
                     double angle = qAtan2(toCenter.y() - fromCenter.y(), 
                                          toCenter.x() - fromCenter.x());

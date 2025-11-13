@@ -8,9 +8,6 @@ class BinarySearchTree;
 class Graph;
 class ReportManager;
 
-/**
- * @brief Controller for file I/O operations
- */
 class FileController : public QObject {
     Q_OBJECT
     

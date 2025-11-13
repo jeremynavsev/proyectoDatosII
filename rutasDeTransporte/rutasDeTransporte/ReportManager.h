@@ -5,9 +5,6 @@
 #include <QVector>
 #include <QDateTime>
 
-/**
- * @brief Manages generation and storage of route query reports
- */
 class ReportManager {
 public:
     struct ReportEntry {

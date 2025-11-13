@@ -3,9 +3,6 @@
 
 #include "Station.h"
 
-/**
- * @brief Node structure for Binary Search Tree
- */
 class TreeNode {
 public:
     Station data;

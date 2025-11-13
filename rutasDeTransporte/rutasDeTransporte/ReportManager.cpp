@@ -37,7 +37,6 @@ QString ReportManager::getReportsAsText() const {
         result += QString("Fecha y Hora: %1\n").arg(report.timestamp.toString("yyyy-MM-dd HH:mm:ss"));
         result += QString("Algoritmo: %1\n").arg(report.algorithm);
         
-        // Check if it's an MST algorithm (Kruskal or Prim)
         if (report.algorithm.contains("MST", Qt::CaseInsensitive)) {
             result += "Tipo: Árbol de Expansión Mínima (MST)\n";
             result += QString("Número de aristas: %1\n").arg(report.path.size() / 2);
@@ -60,7 +59,6 @@ QString ReportManager::getReportsAsText() const {
             }
             result += QString("Costo Total del MST: %1 km\n").arg(report.totalCost, 0, 'f', 2);
         } else {
-            // Regular path-finding algorithm
             result += QString("Origen: %1 - %2\n").arg(report.originId).arg(report.originName);
             result += QString("Destino: %1 - %2\n").arg(report.destinationId).arg(report.destinationName);
             

@@ -9,10 +9,6 @@
 #include "Edge.h"
 #include "ReportManager.h"
 
-/**
- * @brief Controller for Graph operations and path-finding algorithms
- * TODO: Implement actual algorithm logic in the methods below
- */
 class GraphController : public QObject {
     Q_OBJECT
     
@@ -29,7 +25,6 @@ public slots:
     void markEdgeClosed(int from, int to);
     void loadMap();
     
-    // TODO: Implement these algorithms
     void runBFS(int origin, int destination);
     void runDFS(int origin, int destination);
     void runDijkstra(int origin, int destination);
@@ -59,7 +54,6 @@ private:
     
     double calculatePathCost(const QVector<int>& path);
     
-    // TODO: Add private helper methods for algorithm implementation
     QVector<int> bfsSearch(int origin, int destination);
     QVector<int> dfsSearch(int origin, int destination);
     QVector<int> dijkstraSearch(int origin, int destination, double& cost);

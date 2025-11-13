@@ -4,9 +4,6 @@
 #include <QString>
 #include <QMetaType>
 
-/**
- * @brief Represents a bus station in the transport network
- */
 class Station {
 public:
     Station();

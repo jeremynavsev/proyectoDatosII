@@ -129,7 +129,6 @@ void GraphController::runKruskal() {
         } else {
             emit mstFound("Kruskal", edges, totalCost);
             
-            // Add report for MST
             QVector<int> edgeList;
             for (const auto& edge : edges) {
                 edgeList.append(edge.first);
@@ -151,7 +150,6 @@ void GraphController::runPrim() {
         } else {
             emit mstFound("Prim", edges, totalCost);
             
-            // Add report for MST
             QVector<int> edgeList;
             for (const auto& edge : edges) {
                 edgeList.append(edge.first);
@@ -196,7 +194,6 @@ void GraphController::addReportEntry(const QString& algorithm, int origin, int d
     m_reportManager->addReport(entry);
 }
 
-// Helper function to calculate path cost
 double GraphController::calculatePathCost(const QVector<int>& path) {
     double totalCost = 0.0;
     for (int i = 0; i < path.size() - 1; ++i) {
@@ -210,8 +207,6 @@ double GraphController::calculatePathCost(const QVector<int>& path) {
     }
     return totalCost;
 }
-
-// ========== ALGORITHM IMPLEMENTATIONS ==========
 
 QVector<int> GraphController::bfsSearch(int origin, int destination) {
     QVector<int> path;
@@ -231,7 +226,6 @@ QVector<int> GraphController::bfsSearch(int origin, int destination) {
         int current = queue.dequeue();
         
         if (current == destination) {
-            // Reconstruct path
             int node = destination;
             while (node != -1) {
                 path.prepend(node);
@@ -273,7 +267,6 @@ QVector<int> GraphController::dfsSearch(int origin, int destination) {
         visited.insert(current);
         
         if (current == destination) {
-            // Reconstruct path
             int node = destination;
             while (node != -1) {
                 path.prepend(node);
@@ -308,7 +301,6 @@ QVector<int> GraphController::dijkstraSearch(int origin, int destination, double
     QMap<int, int> parent;
     QSet<int> visited;
     
-    // Initialize distances
     QVector<Station> allStations = m_graph->getAllStations();
     for (const Station& station : allStations) {
         distances[station.getId()] = std::numeric_limits<double>::infinity();
@@ -316,9 +308,7 @@ QVector<int> GraphController::dijkstraSearch(int origin, int destination, double
     distances[origin] = 0.0;
     parent[origin] = -1;
     
-    // Dijkstra's algorithm
     while (true) {
-        // Find unvisited node with minimum distance
         int current = -1;
         double minDistance = std::numeric_limits<double>::infinity();
         
@@ -330,16 +320,15 @@ QVector<int> GraphController::dijkstraSearch(int origin, int destination, double
         }
         
         if (current == -1 || minDistance == std::numeric_limits<double>::infinity()) {
-            break; // No more reachable nodes
+            break;
         }
         
         visited.insert(current);
         
         if (current == destination) {
-            break; // Found destination
+            break;
         }
         
-        // Update distances to neighbors
         QVector<Edge> edges = m_graph->getEdgesFrom(current);
         for (const Edge& edge : edges) {
             if (!edge.isClosed() && !visited.contains(edge.getTo())) {
@@ -352,7 +341,6 @@ QVector<int> GraphController::dijkstraSearch(int origin, int destination, double
         }
     }
     
-    // Reconstruct path
     if (visited.contains(destination) && distances[destination] != std::numeric_limits<double>::infinity()) {
         int node = destination;
         while (node != -1) {
@@ -376,7 +364,6 @@ QVector<int> GraphController::floydWarshallSearch(int origin, int destination, d
     QVector<Station> stations = m_graph->getAllStations();
     int n = stations.size();
     
-    // Create index mapping
     QMap<int, int> stationToIndex;
     QMap<int, int> indexToStation;
     for (int i = 0; i < n; ++i) {
@@ -384,16 +371,13 @@ QVector<int> GraphController::floydWarshallSearch(int origin, int destination, d
         indexToStation[i] = stations[i].getId();
     }
     
-    // Initialize distance and next matrices
     QVector<QVector<double>> dist(n, QVector<double>(n, std::numeric_limits<double>::infinity()));
     QVector<QVector<int>> next(n, QVector<int>(n, -1));
     
-    // Initialize diagonal
     for (int i = 0; i < n; ++i) {
         dist[i][i] = 0.0;
     }
     
-    // Initialize edges
     for (const Station& station : stations) {
         int fromIdx = stationToIndex[station.getId()];
         QVector<Edge> edges = m_graph->getEdgesFrom(station.getId());
@@ -406,7 +390,6 @@ QVector<int> GraphController::floydWarshallSearch(int origin, int destination, d
         }
     }
     
-    // Floyd-Warshall algorithm
     for (int k = 0; k < n; ++k) {
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
@@ -420,7 +403,6 @@ QVector<int> GraphController::floydWarshallSearch(int origin, int destination, d
         }
     }
     
-    // Reconstruct path
     int originIdx = stationToIndex[origin];
     int destIdx = stationToIndex[destination];
     
@@ -444,12 +426,10 @@ QVector<QPair<int,int>> GraphController::kruskalMST(double& totalCost) {
     QVector<Edge> allEdges = m_graph->getAllEdges();
     QVector<Station> stations = m_graph->getAllStations();
     
-    // Sort edges by weight
     std::sort(allEdges.begin(), allEdges.end(), [](const Edge& a, const Edge& b) {
         return a.getWeight() < b.getWeight();
     });
     
-    // Union-Find structure
     QMap<int, int> parent;
     for (const Station& station : stations) {
         parent[station.getId()] = station.getId();
@@ -473,7 +453,6 @@ QVector<QPair<int,int>> GraphController::kruskalMST(double& totalCost) {
         return false;
     };
     
-    // Kruskal's algorithm
     for (const Edge& edge : allEdges) {
         if (!edge.isClosed() && unite(edge.getFrom(), edge.getTo())) {
             mstEdges.append(qMakePair(edge.getFrom(), edge.getTo()));
@@ -495,7 +474,6 @@ QVector<QPair<int,int>> GraphController::primMST(double& totalCost) {
     QMap<int, double> minWeight;
     QMap<int, int> parent;
     
-    // Initialize
     int start = stations.first().getId();
     for (const Station& station : stations) {
         minWeight[station.getId()] = std::numeric_limits<double>::infinity();
@@ -503,9 +481,7 @@ QVector<QPair<int,int>> GraphController::primMST(double& totalCost) {
     }
     minWeight[start] = 0.0;
     
-    // Prim's algorithm
     while (inMST.size() < stations.size()) {
-        // Find minimum weight node not in MST
         int u = -1;
         double minW = std::numeric_limits<double>::infinity();
         for (const Station& station : stations) {
@@ -524,7 +500,6 @@ QVector<QPair<int,int>> GraphController::primMST(double& totalCost) {
             totalCost += minWeight[u];
         }
         
-        // Update weights of adjacent nodes
         QVector<Edge> edges = m_graph->getEdgesFrom(u);
         for (const Edge& edge : edges) {
             int v = edge.getTo();

@@ -6,9 +6,6 @@
 #include "Station.h"
 #include "ReportManager.h"
 
-/**
- * @brief Controller for Binary Search Tree operations
- */
 class TreeController : public QObject {
     Q_OBJECT
     
